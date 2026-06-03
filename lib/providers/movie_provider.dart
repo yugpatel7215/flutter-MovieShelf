@@ -1,12 +1,36 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movieshelf/models/movie_models.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:movieshelf/models/movie.dart';
+import 'package:movieshelf/models/movie_details.dart';
 import 'package:movieshelf/repository/movie_repository.dart';
 
 final movieProvider = AsyncNotifierProvider<MovieNotifier, List<Movie>>(
   () => MovieNotifier(),
 );
+
+final searchMovie = StateProvider<String>((ref) {
+  return '';
+});
+
+final searchMovieProvider = FutureProvider.family<List<Movie>, String>((
+  ref,
+  query,
+) async {
+  final repo = ref.read(movieRepositoryProvider);
+
+  return repo.seachMovie(query);
+});
+
+final movieDetailsProvider = FutureProvider.family<MovieDetails, int>((
+  ref,
+  id,
+) {
+  final repo = ref.read(movieRepositoryProvider);
+
+  return repo.getMovieDetails(id);
+});
 
 class MovieNotifier extends AsyncNotifier<List<Movie>> {
   int _page = 1;
