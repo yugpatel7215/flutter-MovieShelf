@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movieshelf/providers/movie_provider.dart';
+import 'package:movieshelf/screens/favourite_movie_screen.dart';
 import 'package:movieshelf/screens/movie_details_screen.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -44,7 +45,20 @@ class _HomePageState extends ConsumerState<HomePage> {
         : ref.watch(searchMovieProvider(query));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('MovieShelf'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('MovieShelf'),
+        centerTitle: true,
+        actions: [
+          TextButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FavouriteMovieScreen()),
+            ),
+            icon: const Icon(Icons.favorite_outline),
+            label: const Text('Favourites'),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -94,8 +108,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              MovieDetailsScreen(movieid: movie.id),
+                          builder: (context) => MovieDetailsScreen(
+                            movieid: movie.id,
+                            movie: movie,
+                          ),
                         ),
                       ),
                       child: Card(

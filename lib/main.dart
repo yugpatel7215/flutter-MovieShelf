@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:movieshelf/models/movie.dart';
 import 'package:movieshelf/screens/home_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(MovieAdapter());
+
+  await Hive.openBox<Movie>('favorites');
+
   runApp(ProviderScope(child: const MyApp()));
 }
 

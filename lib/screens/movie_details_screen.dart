@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movieshelf/models/movie.dart';
+import 'package:movieshelf/providers/favorites_provider.dart';
 import 'package:movieshelf/providers/movie_provider.dart';
+import 'package:movieshelf/widgets/details_widget.dart';
 
 class MovieDetailsScreen extends ConsumerStatefulWidget {
+  final Movie movie;
   final int movieid;
-  const MovieDetailsScreen({super.key, required this.movieid});
+  const MovieDetailsScreen({
+    super.key,
+    required this.movieid,
+    required this.movie,
+  });
 
   @override
   ConsumerState<MovieDetailsScreen> createState() => _MovieDetailsScreenState();
@@ -22,40 +30,55 @@ class _MovieDetailsScreenState extends ConsumerState<MovieDetailsScreen> {
         '${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
-  Widget _detailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 110,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
-                fontSize: 13,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value.isEmpty ? 'Not available' : value,
-              style: const TextStyle(fontSize: 13),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final detailsprovider = ref.watch(movieDetailsProvider(widget.movieid));
+    final favoritesAsync = ref.watch(favouriteProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Movie Details'), elevation: 0),
+      appBar: AppBar(
+        title: const Text('Movie Details'),
+        elevation: 0,
+        actions: [
+          favoritesAsync.when(
+            data: (favorites) {
+              final isFavorite = favorites.any(
+                (item) => item.id == widget.movieid,
+              );
+
+              return IconButton(
+                tooltip: isFavorite
+                    ? 'Remove from favorites'
+                    : 'Add to favorites',
+                onPressed: () async {
+                  await ref
+                      .read(favouriteProvider.notifier)
+                      .toggleFavorite(
+                        Movie(
+                          id: widget.movieid,
+                          title: widget.movie.title,
+                          posterPath: widget.movie.posterPath,
+                        ),
+                      );
+                },
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.redAccent : Colors.white,
+                ),
+              );
+            },
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+            error: (error, stackTrace) => const SizedBox.shrink(),
+          ),
+        ],
+      ),
       body: detailsprovider.when(
         data: (movie) {
           final posterUrl = _imageUrl(movie.posterPath);
@@ -137,7 +160,7 @@ class _MovieDetailsScreenState extends ConsumerState<MovieDetailsScreen> {
                                     vertical: 5,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.amber.withOpacity(0.15),
+                                    color: Colors.amber.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: Colors.amber.shade700,
@@ -205,14 +228,14 @@ class _MovieDetailsScreenState extends ConsumerState<MovieDetailsScreen> {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
-                      _detailRow('Title', movie.title),
-                      _detailRow(
-                        'Rating',
-                        '${movie.rating.toStringAsFixed(1)} / 10',
+                      DetailRow(label: 'Title', value: movie.title),
+                      DetailRow(
+                        label: 'Rating',
+                        value: '${movie.rating.toStringAsFixed(1)} / 10',
                       ),
-                      _detailRow(
-                        'Release Date',
-                        _formatDate(movie.releaseDate),
+                      DetailRow(
+                        label: 'Release Date',
+                        value: _formatDate(movie.releaseDate),
                       ),
                     ],
                   ),
