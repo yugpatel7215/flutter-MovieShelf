@@ -5,7 +5,6 @@ import 'package:movieshelf/models/movie.dart';
 import 'package:movieshelf/models/movie_details.dart';
 
 class MovieRepository {
-  final apikey = 'eab806bfab3d20f65a473bb61851c9c5';
   Future<List<Movie>> getPopularMovies(int page) async {
     print('API Call Started');
     final response = await http.get(
@@ -29,7 +28,7 @@ class MovieRepository {
 
   Future<List<Movie>> seachMovie(String query) async {
     final url = Uri.https('api.themoviedb.org', '/3/search/movie', {
-      'api_key': apikey,
+      'api_key': 'eab806bfab3d20f65a473bb61851c9c5',
       'query': query,
     });
 
@@ -51,7 +50,7 @@ class MovieRepository {
   Future<MovieDetails> getMovieDetails(int movie_id) async {
     final response = await http.get(
       Uri.parse(
-        'https://api.themoviedb.org/3/movie/${movie_id}?api_key=${apikey}',
+        'https://api.themoviedb.org/3/movie/${movie_id}?api_key=eab806bfab3d20f65a473bb61851c9c5',
       ),
     );
     if (response.statusCode == 200) {
