@@ -25,7 +25,7 @@ class RecommendedMovie extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Text(
-              'Reecommended Movies',
+              'Recommended Movies',
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
