@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movieshelf/models/movie.dart';
-import 'package:movieshelf/providers/cast_provider.dart';
 import 'package:movieshelf/providers/favorites_provider.dart';
 import 'package:movieshelf/providers/movie_provider.dart';
 import 'package:movieshelf/widgets/cast_widget.dart';
 import 'package:movieshelf/widgets/details_widget.dart';
+import 'package:movieshelf/widgets/recommended_movie.dart';
 
 class MovieDetailsScreen extends ConsumerStatefulWidget {
   final Movie movie;
@@ -242,8 +242,9 @@ class _MovieDetailsScreenState extends ConsumerState<MovieDetailsScreen> {
                     ],
                   ),
                 ),
-
                 CastSection(movieId: widget.movieid),
+
+                RecommendedMovie(movieId: widget.movieid),
               ],
             ),
           );

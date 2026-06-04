@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movieshelf/providers/cast_provider.dart';
+import 'package:movieshelf/providers/recommended_movie_provider.dart';
 
-class CastSection extends ConsumerWidget {
+class RecommendedMovie extends ConsumerWidget {
   final int movieId;
 
-  const CastSection({super.key, required this.movieId});
+  const RecommendedMovie({super.key, required this.movieId});
 
   String _imageUrl(String? path, {String size = 'w185'}) {
     if (path == null || path.isEmpty) return '';
@@ -14,19 +14,18 @@ class CastSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final castAsync = ref.watch(castProvider(movieId));
+    final recommendedAsyn = ref.watch(recommendedMovieProvider(movieId));
 
-    return castAsync.when(
+    return recommendedAsyn.when(
       data: (castList) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24),
           const Divider(),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Text(
-              'Cast',
+              'Reecommended Movies',
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -46,10 +45,10 @@ class CastSection extends ConsumerWidget {
                     children: [
                       CircleAvatar(
                         radius: 66,
-                        backgroundImage: member.profilepath != null
-                            ? NetworkImage(_imageUrl(member.profilepath))
+                        backgroundImage: member.posterPath != null
+                            ? NetworkImage(_imageUrl(member.posterPath))
                             : null,
-                        child: member.profilepath == null
+                        child: member.posterPath == null
                             ? const Icon(Icons.person, size: 36)
                             : null,
                       ),
@@ -57,7 +56,7 @@ class CastSection extends ConsumerWidget {
                       SizedBox(
                         width: 72,
                         child: Text(
-                          member.name,
+                          member.title,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
